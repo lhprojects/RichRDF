@@ -1,0 +1,16 @@
+.vscode/
+build/
+__pycache__/
+*.so
+*.root
+test/
+*.egg-info/
+*-checkpoint.ipynb
+*-checkpoint.sh
+*-checkpoint.cpp
+*-checkpoint.py
+
+
+
+
+
