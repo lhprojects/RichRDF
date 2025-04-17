@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "RichRDF"
+version = "0.1.0"
+description = "A simple package to enrich your ROOT Data Frame, e.g. read edm4hepr.root"
+authors = [{ name = "Hao Liang" }]
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+richrdf = ["cpp_include/**/*.h", "cpp_include/**/*.hpp"]
+
