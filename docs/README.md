@@ -6,4 +6,8 @@
 [Examples](./Examples.md)
 
 
+# Benchmarks
+
+[Benchmarks](./Benchmarks.md)
+
 In progress.

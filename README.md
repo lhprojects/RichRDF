@@ -219,3 +219,7 @@ You don’t need to use `mcp->getXXX()` — it’s conveniently designed so that
 
 [Examples](./docs/Examples.md)
 
+
+# Benchmarks
+
+[Benchmarks](./docs/Benchmarks.md)
