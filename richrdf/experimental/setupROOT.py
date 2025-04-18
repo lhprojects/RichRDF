@@ -13,7 +13,7 @@ def setupROOT(cvmfsversion: str):
     print("LDDIR ", lddir)
 
     lddir = ":".join(lddir)
-    os.environ["LD_LIBRARY_PATH"] = lddir + ":" + os.environ["LD_LIBRARY_PATH"]
+    os.environ["LD_LIBRARY_PATH"] = lddir + ":" + os.environ.get("LD_LIBRARY_PATH", "")
 
 
     # use cvmfs ROOT
