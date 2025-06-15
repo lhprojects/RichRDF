@@ -141,6 +141,9 @@ class RRDF:
             return call_handler(self, handler, callsite_info)
         return TemplateProxyProxy(proxied, post)
      
+    def AsNumpy(self, *kargs, **kwargs):
+        return _LazyAsNumpy(self._backend, *kargs, **kwargs).GetValue()
+    
     # added by me
     def AsNumpy_(self, *kargs, **kwargs):
         handler = _LazyAsNumpy(self._backend, *kargs, **kwargs)
