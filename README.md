@@ -123,7 +123,7 @@ The usage of `RichRDF` is as follows:
 ```python
 df = richrdf.RichRDF("events", filename)
 ```
-The `RichRDF` function takes a variable number of positional and keyword arguments. Typically, the first positional argument is the name of the `TTree`, such as `"events"`, which is the default for `edm4hep` data. The second is usually the ROOT file name. For `edm4hep` files, the tree is almost always named `"events"`, and metadata is included in the same file. However, if you're reading a plain ROOT file that doesn't follow the `edm4hep` format, you may see warnings or errors due to missing metadata. In such cases, it's recommended to set `readMetadata=False` to skip the metadata reading process. By default, `readMetadata` is set to `True`, because metadata is necessary when using methods like `readEvent`. 
+The `RichRDF` function takes a variable number of positional and keyword arguments. Typically, the first positional argument is the name of the `TTree`, such as `"events"`, which is the default for `edm4hep` data. The second is usually the ROOT file name. For `edm4hep` files, the tree is almost always named `"events"`, and metadata is included in the same file. However, if you're reading a plain ROOT file that doesn't follow the `edm4hep` format, you may see warnings or errors due to missing metadata. In such cases, it's recommended to set `readMetadata=False` to skip the metadata reading process. By default, `readMetadata` is set to `True`, because metadata is necessary when using methods like `ReadEvent`. 
 
 
 You can also pass an `RDataFrame` class,
@@ -147,13 +147,13 @@ This will define an `"event"` column in the DataFrame that includes the `MCParti
 Elements in `PandoraPFOs` are typically of type `edm4hep::ReconstructedParticle`, which has four associated relations: `clusters`, `tracks`, `particles`, and `vertex`.
 By default, `ReadEvent` does **not** load these related collections unless you explicitly specify them as arguments when calling `ReadEvent`.
 If you don't provide these collections as arguments, you can still call `auto clusters = rec.getClusters();`.
-However, this will return an array of **empty clusters**.
+However, this will return an array of **empty clusters** (not an empty array of cluster).
 As a result, `rec.getClusters()[...].isValid()` will return `false`.  
 If you try to access data like `rec.getClusters()[...].getEnergy()`, your program is almost guaranteed to crash. This is because `podio` is designed **not to throw exceptions**, even for invalid access.
 
 
 
-Due to limitations of `RDataFrame`, we cannot automatically add related collections such as clusters for you—you’ll need to do this manually. You can enable `throwExceptionOnRefCollIDNotFound` to catch missing references, e.g.,
+Due to limitations of `RDataFrame`, we cannot automatically add related collections such as clusters for you—you'll need to do this manually. You can enable `throwExceptionOnRefCollIDNotFound` to catch missing references, e.g.,
 ```python
 df = df.ReadEvent("event", ["MCParticles", "PandoraPFOs"], throwExceptionOnRefCollIDNotFound=True)
 ```
