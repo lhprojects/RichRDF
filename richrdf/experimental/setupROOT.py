@@ -4,11 +4,16 @@ import glob
 
 def setupROOT(cvmfsversion: str):
     print("CVMFS version", cvmfsversion)
+
+    if cvmfsversion.startswith("/cvmfs/"):
+        key4hep_path=cvmfsversion
+    else:
+        key4hep_path=f"/cvmfs/sw.hsf.org/key4hep/releases/{cvmfsversion}"
         
     lddir = []
-    lddir.extend(glob.glob(f"/cvmfs/sw.hsf.org/key4hep/releases/{cvmfsversion}/root/*/lib"))
-    lddir.extend(glob.glob(f"/cvmfs/sw.hsf.org/key4hep/releases/{cvmfsversion}/edm4hep/*/lib"))
-    lddir.extend(glob.glob(f"/cvmfs/sw.hsf.org/key4hep/releases/{cvmfsversion}/podio/*/lib"))
+    lddir.extend(glob.glob(f"{key4hep_path}/root/*/lib"))
+    lddir.extend(glob.glob(f"{key4hep_path}/edm4hep/*/lib"))
+    lddir.extend(glob.glob(f"{key4hep_path}/podio/*/lib"))
 
     print("LDDIR ", lddir)
 
@@ -17,14 +22,15 @@ def setupROOT(cvmfsversion: str):
 
 
     # use cvmfs ROOT
-    rootdir = glob.glob(f"/cvmfs/sw.hsf.org/key4hep/releases/{cvmfsversion}/root/*/lib")
-    print("ROOTDIR", rootdir)
+    rootdir = glob.glob(f"{key4hep_path}/root/*/lib")
+    print("ROOTDIR", rootdir, [rootdir_ + "/root" for rootdir_ in rootdir])
     for rootdir_ in rootdir:
         sys.path.append(rootdir_)
+        sys.path.append(rootdir_ + "/root")
 
     includes = []
-    includes.extend(glob.glob(f"/cvmfs/sw.hsf.org/key4hep/releases/{cvmfsversion}/edm4hep/*/include"))
-    includes.extend(glob.glob(f"/cvmfs/sw.hsf.org/key4hep/releases/{cvmfsversion}/podio/*/include"))
+    includes.extend(glob.glob(f"{key4hep_path}/edm4hep/*/include"))
+    includes.extend(glob.glob(f"{key4hep_path}/podio/*/include"))
     print("Includes", includes)
 
 
@@ -40,6 +46,8 @@ def setupROOT(cvmfsversion: str):
 
     ROOT.gSystem.Load(f"libpodio.so")
     ROOT.gSystem.Load(f"libpodioDict.so")
+    ROOT.gSystem.Load(f"libpodioRootIO.so")
+    ROOT.gSystem.Load(f"libpodioRootIODict.so")
      
     #ROOT.gSystem.Load(f"libGLU.so")
 
