@@ -273,6 +273,8 @@ def RichRDF(*kargs, readMetadata: bool = True, RDataFrame=None, **kwargs):
             metadata = init_Metadata(*kargs, **kwargs)
             df._podio_metadata = metadata
         except Exception as e:
+            import traceback
+            traceback.print_exc() 
             print(f"Error reading metadata: {e}")
             print(f"But we continue")
 
