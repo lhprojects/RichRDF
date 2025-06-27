@@ -419,6 +419,7 @@ def ReadEventDefintion(df, podio_metadata: PODIO_Metadata, collections,
         }}
         return "Unknown";
     }};
+    event.index = rdfentry_;
     
     rrdf::evtd::Options options;
     options.getCollNameById = getCollNameById;

@@ -45,7 +45,7 @@ namespace evtd { // EVenT Details
 
 struct Event 
 {
-
+    uint64_t index = 0;
     std::vector<std::unique_ptr<evtd::CollectionStub> > collections;
     robin_hood::unordered_map<std::string_view, evtd::CollectionStub* > name_to_collection;
     robin_hood::unordered_map<uint32_t, evtd::CollectionStub* > ID_to_collection;
