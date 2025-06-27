@@ -208,6 +208,10 @@ You don’t need to use `mcp->getXXX()` — it’s conveniently designed so that
 ### `Evaluate`
 (In progress.)
 
+# Documents
+See https://lhprojects.github.io/RichRDF_Doc for auto-generated document.
+
+
 # Utils
 
 [Utils](./docs/Utils.md)
