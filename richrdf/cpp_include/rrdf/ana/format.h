@@ -520,6 +520,15 @@ int debugln(std::string_view fmt, Args &&...args)
     return str.size();
 }
 
+template <typename... Args>
+int debug(std::string_view fmt, Args &&...args)
+{
+    if (!if_debug()) return -1;
+    std::string str = format(fmt, args...);
+    _debug(str);
+    return str.size();
+}
+
 
 } 
 

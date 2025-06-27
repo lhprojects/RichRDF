@@ -3,6 +3,10 @@
 
 #include "edm4hep/MCParticleData.h"
 #include "edm4hep/MCParticle.h"
+
+#include "edm4hep/Vector3d.h"
+#include "edm4hep/Vector3f.h"
+
 #include "podio/ObjectID.h"
 
 #include "TLorentzVector.h"
@@ -16,6 +20,16 @@
 #include <string>
 #include <vector>
 
+namespace rrdf {
+    inline double norm(edm4hep::Vector3d const &v) {
+        return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    }
+
+    inline double norm(edm4hep::Vector3f const &v) {
+        return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    }
+
+}
     
 inline TVector3 GetV3(edm4hep::MCParticle const &mcp) { 
     return TVector3(mcp.getMomentum()[0], mcp.getMomentum()[1], mcp.getMomentum()[2]);

@@ -3,6 +3,7 @@
 
 #include "rrdf/ana.h"
 #include "rrdf/pdgid.h"
+#include "rrdf/pdgidutils.h"
 #include "rrdf/podioevt.h"
 #include "rrdf/edmutils.h"
 
