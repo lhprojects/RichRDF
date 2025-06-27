@@ -29,7 +29,8 @@ author = 'Harry LIANG'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',  # optional: for Google/NumPy docstrings
+    'sphinx.ext.napoleon',  # optional: for Google/NumPy 
+    'sphinx.ext.viewcode',  # optional: to add links to source code
 ]
 
 # Add any paths that contain templates here, relative to this directory.
