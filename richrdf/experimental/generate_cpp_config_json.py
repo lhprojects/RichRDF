@@ -1,3 +1,35 @@
+"""
+Generate a `.vscode/c_cpp_properties.json` configuration file for C++ IntelliSense in VSCode.
+
+This utility simplifies setting up Visual Studio Code for C++ development by generating
+a `c_cpp_properties.json` file using the specified Key4HEP CVMFS toolchain version.
+
+IntelliSense in VSCode relies on this JSON file to properly locate system headers,
+toolchain includes, and C++ standard configuration.
+
+Usage (after package installation):
+Run the module from the command line:
+ 
+>>> python -m richrdf.experimental.generate_cpp_config_json <cvmfsversion>
+
+
+Alternatively, if the package is not installed, you can execute the script directly:
+ 
+>>> python richrdf/experimental/generate_cpp_config_json.py <cvmfsversion>
+
+
+Parameters
+----------
+<cvmfsversion> : str
+    Key4HEP CVMFS toolchain version. Example:
+    `"2024-10-03/x86_64-almalinux9-gcc14.2.0-opt"`
+
+Notes
+-----
+- If the specified output file already exists, the function skips overwriting.
+- If the file doesn't take effect, try moving it manually to the root of your workspace.
+"""
+
 import json
 import glob
 import os

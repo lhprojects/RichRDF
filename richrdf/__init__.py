@@ -1,9 +1,45 @@
 from .FlattenNpArray import  FlattenNpArray
 from .RichRDF import RichRDF
-from .include import get_include_path
+from .RichRDF import RRDF
 
+def get_include_path():
+    """
+    Return the absolute path to the local C++ header include directory.
+
+    This function is useful for setup scripts or bindings that need access
+    to the `cpp_include` folder located alongside this file.
+
+    Returns
+    -------
+    str
+        Absolute path to the `cpp_include` directory.
+    """
+    import os
+    return os.path.join(os.path.dirname(__file__), "cpp_include")
 
 def get_dependent_collection_names(filename, colls, printOnEachIter=False):
+    """
+    Dynamically detect and append missing collection names required for event reading.
+
+    This function attempts to read the specified event collections from the input file,
+    and if a referenced collection is missing, it parses the exception and adds the
+    missing collection name to the list, retrying until success or exhaustion.
+
+    Parameters
+    ----------
+    filename : str
+        Path to the event file.
+    colls : list of str
+        List of collection names to start with; more may be appended.
+    printOnEachIter : bool, optional
+        Whether to print collection status after each attempt.
+
+    Returns
+    -------
+    list of str
+        Complete list of required collections after dynamic resolution.
+    """
+
     for iter in range(10000):  # try reading the event multiple times to catch all missing collections
         try:
             df = RichRDF("events", filename)
@@ -29,4 +65,3 @@ def get_dependent_collection_names(filename, colls, printOnEachIter=False):
 
     return colls
 
-__all__ = ["include", "experimental"]  # Only expose these models

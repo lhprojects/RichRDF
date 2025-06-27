@@ -208,9 +208,6 @@ You don’t need to use `mcp->getXXX()` — it’s conveniently designed so that
 ### `Evaluate`
 (In progress.)
 
-# Documentation  
-[Documentation](./docs/README.md)
-
 # Utils
 
 [Utils](./docs/Utils.md)

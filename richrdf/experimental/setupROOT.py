@@ -3,6 +3,30 @@ import sys
 import glob
 
 def setupROOT(cvmfsversion: str):
+    """
+    Configure ROOT and environment paths based on a given Key4HEP CVMFS version.
+
+    This function sets up the necessary `LD_LIBRARY_PATH`, Python import paths,
+    and ROOT include paths for working with `edm4hep` and `podio` using the CVMFS-based
+    Key4HEP stack. It dynamically locates shared libraries and includes, loads required
+    ROOT libraries, and modifies the runtime environment accordingly.
+
+    Parameters
+    ----------
+    cvmfsversion : str
+        The Key4HEP release version or full path. Example:
+        - "2024-10-03/x86_64-almalinux9-gcc14.2.0-opt"
+        - "/cvmfs/sw.hsf.org/key4hep/releases/2024-10-03/x86_64-almalinux9-gcc14.2.0-opt"
+
+    Notes
+    -----
+    - This function assumes that CVMFS is mounted and accessible at `/cvmfs`.
+
+    Examples
+    --------
+    >>> setupROOT("2024-10-03/x86_64-almalinux9-gcc14.2.0-opt")
+    >>> import ROOT
+    """    
     print("CVMFS version", cvmfsversion)
 
     if cvmfsversion.startswith("/cvmfs/"):
