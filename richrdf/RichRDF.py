@@ -113,7 +113,7 @@ class RRDF:
 
     def GraphAsymmErrors(self, *kargs, **kwargs):
         """ """
-        handler = self._backend.GraphAsmmErrors(* kargs, **kwargs)
+        handler = self._backend.GraphAsymmErrors(* kargs, **kwargs)
         return call_handler(self, handler, get_callsite_info())
 
     
