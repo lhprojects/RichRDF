@@ -4,35 +4,108 @@ import glob
 import json
 
 CollTypeInfo = namedtuple("CollTypeInfo", ["name", "id", "isSubColl", "version"])
+CollectionIDTable  = namedtuple("CollTypeInfo", ["name", "id"])
 
-def getRelBranches(podio_metadata):
-    relBranches = {}
 
-    # from long long to short name
-    # so that we can deal with a, _a_b_, a_b_, _a_b_c correctly
-    # note: in this case, we have two collections, a, and a_b
-    branchNames_sorted = sorted(podio_metadata.branchNames)[::-1]
-    branchNames_origin = podio_metadata.branchNames
-    branchNames_set = set(podio_metadata.branchNames)
-    deleted = [False] * len(branchNames_origin)
+class Event_Metadata:
+    """ EventMetadata """
+    def __init__(self, branchNames):
+        self.branchNames = branchNames
 
-    for collName in branchNames_sorted:
-        if collName not in podio_metadata.events_colls_name:
-            continue
+    def getBranchNames(self):
+        '''
+        Get the names of all branches.
+        '''
+        return self.branchNames
+
+class PODIO_Metadata:
+    """ PODIO_Metadata """
+    def __init__(self, coll_type_infos, events_collIDTable, edm_defs):
+        self.coll_type_infos = coll_type_infos
+        self.events_collIDTable = events_collIDTable
+        self.edm_defs = edm_defs
+
+        self.events_id_to_name = {}
+        self.events_name_to_id = {}
+        self.colls_id_to_type  = {}
+        self.events_coll_names = []
+        self.events_coll_ids = []
+
+        for coll in events_collIDTable:
+            self.events_coll_names.append(coll.name)
+            self.events_coll_ids.append(coll.id)
+            self.events_id_to_name[coll.id] = coll.name
+            self.events_name_to_id[coll.name] = coll.id
         
-        if collName not in branchNames_set:
-            raise ValueError(f"Collection {collName} is a collection name, but not a branch name ({branchNames_origin})")
+        for info in coll_type_infos:
+            id, name, isSubColl, version = info
+            self.colls_id_to_type[id] = CollTypeInfo(name, id, isSubColl, version)
 
-        start = "_" + collName + "_"
-        relBranches[collName] = []
+        #self.relBranches = getRelBranches(self)
+        self.relBranches = getRelBranchesFromDefs(self)
+        self.vecMembers = getVecMembersFromDefs(self)
+    
+    def getCollTypeInfos(self):
+        '''
+        Get the collection type information.
+        return array of CollTypeInfo().
+        '''
+        return self.coll_type_infos    
+    
+    def getCollNames(self):
+        '''
+        Get the names of all collections.
+        '''
+        return self.events_coll_names
+    
+    def getEventCollIDTable(self):
+        '''
+        Get the collection type information.
+        return array of CollTypeInfo().
+        '''
+        return self.events_collIDTable
 
-        # use origin order
-        for i, branchName in enumerate(branchNames_origin):
-            if not deleted[i] and branchName.startswith(start):
-                relBranches[collName].append(branchName)
-                deleted[i] = True
+    def getCollIDByName(self, name) -> int:
+        '''
+        Get the ID of a collection by its name.
+        '''
+        if name not in self.events_name_to_id:
+            raise ValueError(f"Collection {name} not found in metadata ({self.events_coll_names})")
         
-    return relBranches
+        id = self.events_name_to_id[name]
+        return id
+
+    def getCollNameByID(self, id):
+        '''
+        Get the name of a collection by its ID.
+        '''
+        if id not in self.events_id_to_name:
+            raise ValueError(f"Collection {id} not found in metadata ({self.events_coll_name})")
+        
+        name = self.events_id_to_name[id]
+        return name
+    
+    def getCollTypeByID(self, id):
+        '''
+        Get the type of a collection by its ID.
+        '''
+        if id not in self.colls_id_to_type:
+            raise ValueError(f"Collection type for Collection {id} not found in metadata")
+        
+        type = self.colls_id_to_type[id]
+        return type
+
+    def getCollTypeByName(self, name):
+        '''
+        Get the type of a collection by its name.
+        '''
+        id = self.getCollIDByName(name)
+        if id not in self.colls_id_to_type:
+            raise ValueError(f"Collection type for Collection {name} with ID {id} not found in metadata")
+        
+        type = self.colls_id_to_type[id]
+        return type
+
 
 def getRelBranchesFromDefs(podio_metadata):
     relBranches = {}
@@ -64,95 +137,11 @@ def getVecMembersFromDefs(podio_metadata):
 
     return relBranches
 
-
-class PODIO_Metadata:
-    def __init__(self, coll_type_infos, events_colls_name, events_colls_id, edm_defs, branchNames):
-        self.coll_type_infos = coll_type_infos
-        self.events_colls_name = events_colls_name
-        self.events_colls_id = events_colls_id
-        self.edm_defs = edm_defs
-        self.branchNames = branchNames
-
-        self.events_id_to_name = {}
-        self.events_name_to_id = {}
-        self.colls_id_to_type  = {}
-
-        for id, name in zip(events_colls_id, events_colls_name):
-            self.events_id_to_name[id] = name
-            self.events_name_to_id[name] = id
-        
-        for info in coll_type_infos:
-            id, name, isSubColl, version = info
-            self.colls_id_to_type[id] = CollTypeInfo(name, id, isSubColl, version)
-
-        #self.relBranches = getRelBranches(self)
-        self.relBranches = getRelBranchesFromDefs(self)
-        self.vecMembers = getVecMembersFromDefs(self)
-    
-    def getCollTypeInfos(self):
-        '''
-        Get the collection type information.
-        '''
-        return self.coll_type_infos    
-    
-    def getCollInfo(self):
-        '''
-        Get the collection type information.
-        '''
-        return [(name, id) for name, id in zip(self.events_colls_name, self.events_colls_id)]
-    
-    def getBranchNames(self):
-        '''
-        Get the names of all branches.
-        '''
-        return self.branchNames
-    
-    def collNames(self):
-        '''
-        Get the names of all collections.
-        '''
-        return self.events_colls_name
-    
-    def getIDByName(self, name) -> int:
-        '''
-        Get the ID of a collection by its name.
-        '''
-        if name not in self.events_name_to_id:
-            raise ValueError(f"Collection {name} not found in metadata ({self.events_colls_name})")
-        
-        id = self.events_name_to_id[name]
-        return id
-
-    def getNameByID(self, id):
-        '''
-        Get the name of a collection by its ID.
-        '''
-        if id not in self.events_id_to_name:
-            raise ValueError(f"Collection {id} not found in metadata ({self.events_colls_name})")
-        
-        name = self.events_id_to_name[id]
-        return name
-    
-    def getTypeByID(self, id):
-        '''
-        Get the type of a collection by its ID.
-        '''
-        if id not in self.colls_id_to_type:
-            raise ValueError(f"Collection type for Collection {id} not found in metadata")
-        
-        type = self.colls_id_to_type[id]
-        return type
-
-    def getTypeByName(self, name):
-        '''
-        Get the type of a collection by its name.
-        '''
-        id = self.getIDByName(name)
-        if id not in self.colls_id_to_type:
-            raise ValueError(f"Collection type for Collection {name} with ID {id} not found in metadata")
-        
-        type = self.colls_id_to_type[id]
-        return type
+class Metadata:
+    """ Metadata """
+    def __init__(self, podio_metadata : PODIO_Metadata, events_Metadata: Event_Metadata):
+        self.podio_metadata = podio_metadata
+        self.events_metadata = events_Metadata
 
 def get_defs_from_tree(tree):
 
@@ -213,15 +202,22 @@ def get_podio_metadata(file):
 
     events_colls_name = [str(v) for v in tree.events___idTable.names()]
     events_colls_id = [int(v) for v in tree.events___idTable.ids()]
+    events_collIDTable = [CollectionIDTable(name, id) for name, id in zip(events_colls_name, events_colls_id)]
     rel_defs = get_defs_from_tree(tree)
 
     
+    return PODIO_Metadata(coll_type_infos, events_collIDTable, rel_defs)
+
+def get_events_metadata(file):
     tree = file.Get("events")
     branches = tree.GetListOfBranches()
     branchNames = [ str(b.GetName()) for b in branches]
+    return Event_Metadata(branchNames)
 
-    return PODIO_Metadata(coll_type_infos, events_colls_name, events_colls_id, rel_defs, branchNames)
-
+def get_metadata(file):
+    podio_metadata = get_podio_metadata(file)
+    events_metadata = get_events_metadata(file)
+    return Metadata(podio_metadata, events_metadata)
 
 def _is_string_like(obj):
     return isinstance(obj, str)
@@ -248,7 +244,7 @@ def ReadPODIO_Metadata(fileName):
 
     file = ROOT.TFile.Open(fileNames[0])
     try:
-        metadata = get_podio_metadata(file)
+        metadata = get_metadata(file)
     except Exception as e:
         raise e
     finally:
@@ -271,10 +267,9 @@ def init_Metadata(*kargs, **kwargs):
     metadata = ReadPODIO_Metadata(fileName)
     return metadata
 
-    
-def ReadEventDefintion(df, podio_metadata: PODIO_Metadata, collections, 
-                       throwExceptionOnRefCollIDNotFound: bool = False):
-
+def get_collections(collections, metadata: Metadata):
+    podio_metadata = metadata.podio_metadata
+    events_metadata = metadata.events_metadata
 
     if collections is None or len(collections) == 0:
         collections = []
@@ -289,23 +284,31 @@ def ReadEventDefintion(df, podio_metadata: PODIO_Metadata, collections,
                 continue
             
             if not collType.isSubColl:
-                if collName not in podio_metadata.branchNames:
+                if collName not in events_metadata.branchNames:
                     print(f"Collection {collName} has no branch name, skipping")
                     continue
             else:
-                if collName + "_objIdx" not in podio_metadata.branchNames:
+                if collName + "_objIdx" not in events_metadata.branchNames:
                     print(f"Collection {collName} has no branch name ({collName + '_objIdx'}), skipping")
                     continue
 
             collections.append(collName)
+    return collections
+    
+def ReadEventDefintion(df, metadata: Metadata, collections, 
+                       throwExceptionOnRefCollIDNotFound: bool = False):
+
+    podio_metadata = metadata.podio_metadata
+    collections = get_collections(collections, metadata)
+
 
     collTypeNames = []
     collIds = []
     isSubcoll = []
     for collName in collections:
-        collId = podio_metadata.getIDByName(collName)
+        collId = podio_metadata.getCollIDByName(collName)
         #collType = podio_metadata.getTypeByID(collId)
-        collType = podio_metadata.getTypeByName(collName)
+        collType = podio_metadata.getCollTypeByName(collName)
         collIds.append(collId)
         collTypeNames.append(collType.name)
         isSubcoll.append(collType.isSubColl)
@@ -398,8 +401,8 @@ def ReadEventDefintion(df, podio_metadata: PODIO_Metadata, collections,
 
     # this just works, it seems the return key in the function body
 
-    collNames = "".join([f'"{coll[:-1]}" "{coll[-1:]}",\n' for coll in podio_metadata.events_colls_name])
-    collIDs = "".join([f'{collID},\n' for collID in podio_metadata.events_colls_id])
+    collNames = "".join([f'"{coll[:-1]}" "{coll[-1:]}",\n' for coll in podio_metadata.events_coll_names])
+    collIDs = "".join([f'{collID},\n' for collID in podio_metadata.events_coll_ids])
     function_body ='''
     {
     rrdf::Event event;
