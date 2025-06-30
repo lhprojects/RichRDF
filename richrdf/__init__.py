@@ -1,6 +1,5 @@
 from .FlattenNpArray import  FlattenNpArray
 from .RichRDF import RichRDF
-from .RichRDF import RRDF
 
 def get_include_path():
     """

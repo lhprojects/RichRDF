@@ -4,7 +4,7 @@ import glob
 import json
 
 CollTypeInfo = namedtuple("CollTypeInfo", ["name", "id", "isSubColl", "version"])
-CollectionIDTable  = namedtuple("CollTypeInfo", ["name", "id"])
+CollectionIDTable  = namedtuple("CollectionIDTable", ["name", "id"])
 
 
 class Event_Metadata:
@@ -61,7 +61,7 @@ class PODIO_Metadata:
     def getEventCollIDTable(self):
         '''
         Get the collection type information.
-        return array of CollTypeInfo().
+        return array of CollectionIDTable().
         '''
         return self.events_collIDTable
 
